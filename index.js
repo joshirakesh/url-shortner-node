@@ -1,6 +1,7 @@
 const express = require('express');
 const urlRoute = require('./routes/url');
-const url = require('./models/url');
+const { handleGetRedirectUrlFromShortId } = require('./controllers/url');
+
 const { connectToMongoDB } = require('./connect');
 
 const app = express();
@@ -14,23 +15,7 @@ app.use(express.json());
 
 app.use('/url', urlRoute);
 
-app.get('/:shortId', async (req, res) => {
-    const shortId = req.params.shortId;
-    const entry = await url.findOneAndUpdate({ shortId }, {
-        $push: {
-            visitHistory: {
-                timestamp: Date.now()
-            }
-        }
-    }, { new: true });
-    let redirectUrl = entry?.redirectUrl;
-    if (!/^https?:\/\//i.test(redirectUrl)) {
-        console.log('addding http');
-        redirectUrl = 'https://' + redirectUrl;
-    }
-    console.log('redirecting to', redirectUrl);
-    res.redirect(redirectUrl);
-});
+app.get('/:shortId', handleGetRedirectUrlFromShortId);
 
 app.listen(PORT, () => { console.log(`Server is running on port: ${PORT}`) });
 

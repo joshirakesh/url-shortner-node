@@ -19,7 +19,26 @@ async function handleGenerateNewShortURL(req, res) {
 
 }
 
+async function handleGetRedirectUrlFromShortId(req, res) {
+    const shortId = req.params.shortId;
+    const entry = await url.findOneAndUpdate({ shortId }, {
+        $push: {
+            visitHistory: {
+                timestamp: Date.now()
+            }
+        }
+    }, { new: true });
+    let redirectUrl = entry?.redirectUrl;
+    if (!/^https?:\/\//i.test(redirectUrl)) {
+        console.log('addding http');
+        redirectUrl = 'https://' + redirectUrl;
+    }
+    console.log('redirecting to', redirectUrl);
+    res.redirect(redirectUrl);
+}
+
 
 module.exports = {
-    handleGenerateNewShortURL
+    handleGenerateNewShortURL,
+    handleGetRedirectUrlFromShortId
 };
