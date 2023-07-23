@@ -14,7 +14,7 @@ app.use(express.json());
 
 app.use('/url', urlRoute);
 
-app.get('/:shortId', async (req, res) => {
+app.get('/url/:shortId', async (req, res) => {
     const shortId = req.params.shortId;
     const entry = await url.findOneAndUpdate({ shortId }, {
         $push: {
@@ -23,7 +23,13 @@ app.get('/:shortId', async (req, res) => {
             }
         }
     }, { new: true });
-    res.redirect(entry?.redirectUrl);
+    let redirectUrl = entry?.redirectUrl;
+    if (!/^https?:\/\//i.test(redirectUrl)) {
+        console.log('addding http');
+        redirectUrl = 'https://' + redirectUrl;
+    }
+    console.log('redirecting to', redirectUrl);
+    res.redirect(redirectUrl);
 });
 
 app.listen(PORT, () => { console.log(`Server is running on port: ${PORT}`) });
