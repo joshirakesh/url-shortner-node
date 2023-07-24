@@ -6,8 +6,10 @@ const { connectToMongoDB } = require('./connect');
 
 const app = express();
 const PORT = 8001;
+const { connectionStr } = require('./env');
 
-connectToMongoDB('mongodb://127.0.0.1:27017/url-shortener-node').then(() => {
+const urlDbName = 'url-shortener-node';
+connectToMongoDB(connectionStr + '/' + urlDbName).then(() => {
     console.log('Connected to MongoDB');
 });
 
