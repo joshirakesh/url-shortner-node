@@ -40,7 +40,9 @@ async function handleGetRedirectUrlFromShortId(req, res) {
 async function handleGetAnalyticsHistory(req, res) {
     const shortId = req.params.shortId;
     const result = await url.findOne({ shortId });
-    return res.status(200).json({ totalClicks: result.visitHistory.length, analytics: result.visitHistory });
+    return res.status(200).json({
+        totalClicks: result.visitHistory.length, analytics: result.visitHistory
+    });
 }
 
 module.exports = {
